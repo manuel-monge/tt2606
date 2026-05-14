@@ -1,0 +1,3 @@
+export PDK_ROOT=~/projects/tt/ttsetup/pdk
+export PDK=sky130A
+export LIBRELANE_TAG=3.0.0rc1
