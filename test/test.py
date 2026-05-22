@@ -75,11 +75,23 @@ async def test_project(dut):
     await Timer(1*clkperiod, unit="us")
     set_bit_in_array(dut.ui_in, 0, 0) # SEN = 0
 
-    # Assert if the parallel output of the scanchain is correct after shifting in the input values.
-    dout_value = str(dut.dut.dout.value) # Get the dut.sdo value in binary string format
-    dut._log.info("dout_value: %s", dout_value)
 
-    assert dout_value == din_value # Check if the parallel output matches the input value.
+    obj = getattr(dut.dut, 'dout', None) # Check for dut-internal variable "dout" (which is the case for RTL simulation but not for GL simulation)
+    
+    if obj == None:
+        sim_is_rtl = 0
+        dut._log.info("GL simulation detected")
+    else:
+        sim_is_rtl = 1
+        dut._log.info("RTL simulation detected")
+
+
+    if sim_is_rtl:
+        # Assert if the parallel output of the scanchain is correct after shifting in the input values.
+        dout_value = str(dut.dut.dout.value) # Get the dut.sdo value in binary string format
+        dut._log.info("dout_value: %s", dout_value)
+        assert dout_value == din_value # Check if the parallel output matches the input value.
+    
 
     # continue with test by scanning out all bits
     await Timer(16*clkperiod, unit="us")
