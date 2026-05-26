@@ -40,7 +40,7 @@ module tt_um_top (
     assign sclk = clk;
     assign sen = ui_in[0];
     assign sdi = ui_in[1];
-    assign sdo = uo_out[0];
+    assign uo_out[0] = sdo;
 
     // *****************************************************************
     // END: Description of your design
