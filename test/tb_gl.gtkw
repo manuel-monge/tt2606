@@ -1,0 +1,62 @@
+[*]
+[*] GTKWave Analyzer v3.3.116 (w)1999-2023 BSI
+[*] Tue May 26 14:45:13 2026
+[*]
+[dumpfile] "/data/projects/tt2606/test/tb.fst"
+[dumpfile_mtime] "Tue May 26 11:28:49 2026"
+[dumpfile_size] 12207
+[savefile] "/data/projects/tt2606/test/tb_gl.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-23.882210 36000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[sst_width] 278
+[signals_width] 214
+[sst_expanded] 1
+[sst_vpaned_height] 157
+@29
+tb.dut.clk
+@28
+tb.dut.rst_n
+@c00022
+tb.dut.ui_in[7:0]
+@28
+(0)tb.dut.ui_in[7:0]
+(1)tb.dut.ui_in[7:0]
+(2)tb.dut.ui_in[7:0]
+(3)tb.dut.ui_in[7:0]
+(4)tb.dut.ui_in[7:0]
+(5)tb.dut.ui_in[7:0]
+(6)tb.dut.ui_in[7:0]
+(7)tb.dut.ui_in[7:0]
+@1401200
+-group_end
+@22
+tb.dut.uio_in[7:0]
+tb.dut.uio_oe[7:0]
+tb.dut.uio_out[7:0]
+tb.dut.uo_out[7:0]
+@800022
+#{tb.dut.\scanchain0.chain[15:0]} tb.dut.\scanchain0.chain[15] tb.dut.\scanchain0.chain[14] tb.dut.\scanchain0.chain[13] tb.dut.\scanchain0.chain[12] tb.dut.\scanchain0.chain[11] tb.dut.\scanchain0.chain[10] tb.dut.\scanchain0.chain[9] tb.dut.\scanchain0.chain[8] tb.dut.\scanchain0.chain[7] tb.dut.\scanchain0.chain[6] tb.dut.\scanchain0.chain[5] tb.dut.\scanchain0.chain[4] tb.dut.\scanchain0.chain[3] tb.dut.\scanchain0.chain[2] tb.dut.\scanchain0.chain[1] tb.dut.\scanchain0.chain[0]
+@28
+tb.dut.\scanchain0.chain[0]
+tb.dut.\scanchain0.chain[1]
+tb.dut.\scanchain0.chain[2]
+tb.dut.\scanchain0.chain[3]
+tb.dut.\scanchain0.chain[4]
+tb.dut.\scanchain0.chain[5]
+tb.dut.\scanchain0.chain[6]
+tb.dut.\scanchain0.chain[7]
+tb.dut.\scanchain0.chain[8]
+tb.dut.\scanchain0.chain[9]
+tb.dut.\scanchain0.chain[10]
+tb.dut.\scanchain0.chain[11]
+tb.dut.\scanchain0.chain[12]
+tb.dut.\scanchain0.chain[13]
+tb.dut.\scanchain0.chain[14]
+tb.dut.\scanchain0.chain[15]
+@1001200
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0
