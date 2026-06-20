@@ -179,7 +179,6 @@ module ch_sel #(
 	)(
 	input  wire	rstb,					// Active-low asyncrhonous reset
 	input  wire	clk,					// Input clock
-	input  wire [1:0] mode,					// Input; Operation Mode
 	input  wire [5:0]	ch_cnt,			// Input; channel count
 	input  wire [n-1:0]	data_a0,		// Input; 16-bit data coming from RHD2164-0 output a
 	input  wire [n-1:0]	data_b0,		// Input; 16-bit data coming from RHD2164-0 output b
@@ -187,18 +186,41 @@ module ch_sel #(
 	input  wire [n-1:0]	data_b1,		// Input; 16-bit data coming from RHD2164-1 output b
 	output wire	[n-1:0]	dout,			// Output Data
 	// Channel Config
-	input  wire	[7:0]	mode0_ch_a
+	input  wire	[7:0]	mode0_ch_a,
+	// TX FIFO
+	input  wire	dtx_sel,				// Input: indicates Sampling mode when '1'
+	output reg	fifo_wen				// Output; FIFO write enable
 );
 	
 	// wire & regs
 	reg [n-1:0] data0;
+	wire ch_is_mode0_ch_a, ch_is_redge;
+	reg ch_is_mode0_ch_a_reg, ch_is_mode0_ch_a_reg2;
 	
-	
+	// Comparator
+	assign ch_is_mode0_ch_a = (ch_cnt == mode0_ch_a[5:0]);
+
+	// Rising edge detector sets 'fifo_wen'
+	assign ch_is_redge = (ch_is_mode0_ch_a_reg) & (~ch_is_mode0_ch_a_reg2);
+
+	always@(negedge rstb or posedge clk)
+		if (!rstb) begin
+			ch_is_mode0_ch_a_reg <= 0;
+			ch_is_mode0_ch_a_reg2 <= 0;
+			fifo_wen <= 0;
+		end
+		else if (dtx_sel) begin
+			ch_is_mode0_ch_a_reg <= ch_is_mode0_ch_a;
+			ch_is_mode0_ch_a_reg2 <= ch_is_mode0_ch_a_reg;
+			fifo_wen <= ch_is_redge;
+		end
+
+
 	// channel selection
 	always@(negedge rstb or posedge clk)
 		if (!rstb)
 			data0 <= 0;
-		else if (ch_cnt == mode0_ch_a[5:0])
+		else if ( (dtx_sel) && (ch_is_redge) )
 			case (mode0_ch_a[7:6])
 				2'd0: data0 <= data_a0;
 				2'd1: data0 <= data_b0;
@@ -206,6 +228,7 @@ module ch_sel #(
 				2'd3: data0 <= data_b1;
 				default: data0 <= 0;
 			endcase
+
 	
 	assign dout = data0;
 		
@@ -303,7 +326,7 @@ module fifo #(
 	input  wire wen,						// Input; FIFO write enable
 	input  wire ren,						// Input; FIFO read enable
 	input  wire [DATA_WIDTH-1:0]	DIN,	// Input Data
-	output wire [DATA_WIDTH-1:0] DOUT,	// Output Data
+	output reg	[DATA_WIDTH-1:0] DOUT,	// Output Data
 	output wire	empty,					// Output flag indicating empty FIFO
 	output wire	full					// Output flag indicating full FIFO
 );
@@ -325,15 +348,16 @@ module fifo #(
 		
 	// Reading
 	always@(negedge rstb or posedge clk)
-		if (!rstb)
+		if (!rstb) begin
 			out_ptr <= 0;
+			DOUT <= 0;
+		end
 		else if (ren && !empty) begin
 			out_ptr <= out_ptr + 1'b1;
+			DOUT <= fifo_ram[out_ptr[ADDR_WIDTH-1:0]];
 		end
 	
-	assign DOUT = fifo_ram[out_ptr[ADDR_WIDTH-1:0]];
-
-	
+		
 	// Status Flags
 	assign empty = (in_ptr == out_ptr) ? 1:0; // both pointers are the same
 	assign full = ((in_ptr[ADDR_WIDTH-1:0] == out_ptr[ADDR_WIDTH-1:0]) & (in_ptr[ADDR_WIDTH] != out_ptr[ADDR_WIDTH])) ? 1:0; // pointers have the same [ADDR_WIDTH-1:0] value but the MSBs are different
@@ -361,9 +385,7 @@ module rhd2164_controller (
 	input  wire rhd_done,					// Active-high input that indicates SPI cycle has finished
 	output reg	rhd_dtx_sel,				// Output selector to the data_sel mux
 	output wire	[5:0]	rhd_addr_cfg,		// Output controlling the address of RHD2164_CFG_ROM which contains instructions for the RHD2164 configuration
-	output wire	[5:0]	rhd_addr_sampling,	// Output controlling the address of RHD2164_SAMPLING_ROM which contains instructions for the RHD2164 operation
-	// TX FIFO
-	output reg	fifo_wen					// Output; FIFO write enable
+	output wire	[5:0]	rhd_addr_sampling	// Output controlling the address of RHD2164_SAMPLING_ROM which contains instructions for the RHD2164 operation
 );
 	
 	// state
@@ -432,7 +454,6 @@ module rhd2164_controller (
 		cnt1_en = 1'b0;
 		rhd_start = 1'b0;
 		rhd_dtx_sel = 1'b0;
-		fifo_wen = 1'b0;
 		
 		case (current_state)
 			idle: begin
@@ -475,7 +496,6 @@ module rhd2164_controller (
 				next_state = op1a;
 				cnt1_en = 1'b1;
 				rhd_dtx_sel = 1'b1;
-				fifo_wen = 1'b1;
 			end
 			
 			// Other States

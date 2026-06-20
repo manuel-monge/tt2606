@@ -332,8 +332,7 @@ module rhd2164x2_fpga_mcu_bridge (
 		.rhd_done			(rhd_spi1_done),		// Active-high input that indicates SPI cycle has finished
 		.rhd_dtx_sel		(rhd_dtx_sel),		// Output selector to the data_sel mux
 		.rhd_addr_cfg		(rhd_addr_cfg),		// Output controlling the address of RHD2164_CFG_ROM which contains instructions for the RHD2164 configuration
-		.rhd_addr_sampling	(rhd_addr_sampling),	// Output controlling the address of RHD2164_SAMPLING_ROM which contains instructions for the RHD2164 operation
-		.fifo_wen			(fifo_wen)			// Output; FIFO write enable
+		.rhd_addr_sampling	(rhd_addr_sampling)	// Output controlling the address of RHD2164_SAMPLING_ROM which contains instructions for the RHD2164 operation
 	);
 	
 
@@ -352,16 +351,18 @@ module rhd2164x2_fpga_mcu_bridge (
 		.n(16)
 		)
 		ch_sel0 (
-		.rstb		(rstb),				// Active-low asyncrhonous reset
-		.clk		(clk),				// Input clock
+		.rstb		(rstb),				    // Active-low asyncrhonous reset
+		.clk		(clk),				    // Input clock
 		.ch_cnt		(rhd_addr_sampling),	// Input; channel count
-		.data_a0	(spi1_data_rx_a0),	// Input; 16-bit data coming from RHD2164-0 output a
-		.data_b0	(spi1_data_rx_b0),	// Input; 16-bit data coming from RHD2164-0 output b
-		.data_a1	(spi1_data_rx_a1),	// Input; 16-bit data coming from RHD2164-1 output a
-		.data_b1	(spi1_data_rx_b1),	// Input; 16-bit data coming from RHD2164-1 output b
-		.dout		(fifo_din),			// Output Data
+		.data_a0	(spi1_data_rx_a0),	    // Input; 16-bit data coming from RHD2164-0 output a
+		.data_b0	(spi1_data_rx_b0),	    // Input; 16-bit data coming from RHD2164-0 output b
+		.data_a1	(spi1_data_rx_a1),	    // Input; 16-bit data coming from RHD2164-1 output a
+		.data_b1	(spi1_data_rx_b1),	    // Input; 16-bit data coming from RHD2164-1 output b
+		.dout		(fifo_din),			    // Output Data
 		// Channel Config
-		.mode0_ch_a	(mode0_ch_a)
+		.mode0_ch_a	(mode0_ch_a),
+        .dtx_sel    (rhd_dtx_sel),		    // Input: indicates Sampling mode when '1'
+        .fifo_wen	(fifo_wen)			    // Output; FIFO write enable
 	);
 	
 
